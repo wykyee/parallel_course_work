@@ -9,11 +9,15 @@ import java.util.concurrent.ConcurrentHashMap;
 class IndexThread extends Thread {
     ConcurrentHashMap<String, Set<String>> indexMap;
     HashMap<File, List<Integer>> filesMap;
+    Integer maxThreads, threadIndex;
 
     public IndexThread(HashMap<File, List<Integer>> filesMap,
-                       ConcurrentHashMap<String, Set<String>> map) {
+                       ConcurrentHashMap<String, Set<String>> map,
+                       Integer threadIndex, Integer maxThreads) {
         this.filesMap = filesMap;
         this.indexMap = map;
+        this.threadIndex = threadIndex;
+        this.maxThreads = maxThreads;
     }
 
     @Override
@@ -45,8 +49,11 @@ class IndexThread extends Thread {
         /* Returns list of all files in certain range in directory */
         List<File> filesList = new ArrayList<>();
         Integer start = filesMap.get(directory).get(0),
-                end = filesMap.get(directory).get(1);
-        for (int i = start; i < end ; i++) {
+                end = filesMap.get(directory).get(1),
+                size = end - start;
+        int fromIndex = start + size / maxThreads * threadIndex,
+                toIndex = threadIndex == (maxThreads - 1) ? end : start + size / maxThreads * (threadIndex + 1);
+        for (int i = fromIndex; i < toIndex ; i++) {
             // add file with certain index
             String iAsString = String.valueOf(i);
             FilenameFilter filter = (dir, name) -> {
