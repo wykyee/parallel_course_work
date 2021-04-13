@@ -29,6 +29,7 @@ class Client {
                 if (userInput.equals(config.CLIENT_EXIT_WORD)) {
                     System.out.println("Bye bye");
                     killConnection(socket, in ,out);
+                    break;
                 }
                 String serverResponse = in.readUTF();
                 System.out.println(serverResponse);

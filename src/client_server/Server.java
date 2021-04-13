@@ -27,8 +27,8 @@ public class Server {
 
         while (true) {
             Socket socket = null;
-            DataInputStream in = null;
-            DataOutputStream out = null;
+            DataInputStream in;
+            DataOutputStream out;
             try {
                 socket = server.accept();
                 System.out.println("New client connected");
@@ -39,15 +39,7 @@ public class Server {
                 Thread clientManager = new ClientManager(socket, in, out, map);
                 clientManager.start();
             } catch (IOException e) {
-                if (socket != null) {
-                    socket.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
+                socket.close();
             }
         }
     }
@@ -72,13 +64,13 @@ class ClientManager extends Thread {
     public void run() {
         String userInput;
         ArrayList<String> result;
-        while (true) {
-            try {
+        try {
+            while (true) {
                 out.writeUTF("Enter word to find or '-quit' to exit");
                 userInput = in.readUTF();
                 if (userInput.equals(config.CLIENT_EXIT_WORD)) {
+                    System.out.println("Client is disconnected");
                     killConnection();
-                    out.writeUTF("Bye bye");
                     break;
                 }
                 System.out.println("USER IS LOOKING FOR: " + userInput);
@@ -88,9 +80,9 @@ class ClientManager extends Thread {
                 } else {
                     out.writeUTF("Files don't contain word '" + userInput + "'");
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
