@@ -18,25 +18,9 @@ public class Main {
 
     public static void main(String[] args) {
         IndexThread[] ThreadArray = new IndexThread[config.NUMBER_THREADS];
-        // add ranges of files for each directory
-        /* filesMap structure: {
-              file1: [start_index, end_index],
-              file2: [start_index, end_index]
-        }  */
-        HashMap<File, List<Integer>> filesMap = new HashMap<>();
-//        List<Integer> fileRanges1 = Arrays.asList(8250, 8500);
-//        List<Integer> fileRanges2 = Arrays.asList(33000, 34000);
-        List<Integer> fileRanges1 = Arrays.asList (0, 5);
-        List<Integer> fileRanges2 = Arrays.asList(0, 6);
+        ConcurrentHashMap<String, Set<String>> resultMap = new ConcurrentHashMap<>();
 
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\test\\neg"), fileRanges1);
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\qqq"), fileRanges1);
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\test\\pos"), fileRanges1);
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\unsup"), fileRanges2);
-
-        ConcurrentHashMap<String, Set<String>> resultMap = new  ConcurrentHashMap<>();
+        HashMap<File, List<Integer>> filesMap = buildFilesMap();
 
         long startTime = System.currentTimeMillis();;
         // initializing and starting threads
@@ -53,13 +37,41 @@ public class Main {
             }
         }
         System.out.println("Ended in " + (System.currentTimeMillis() - startTime) / 1000 + " s");
+        writeResultInFile(resultMap);
+    }
+
+    public static HashMap<File, List<Integer>> buildFilesMap() {
+        /* filesMap structure: {
+              file1: [start_index, end_index],
+              file2: [start_index, end_index]
+        }  */
+        HashMap<File, List<Integer>> filesMap = new HashMap<>();
+
+        // add ranges of files for each directory
+//        List<Integer> fileRanges1 = Arrays.asList(8250, 8500);
+//        List<Integer> fileRanges2 = Arrays.asList(33000, 34000);
+        List<Integer> fileRanges1 = Arrays.asList (0, 5);
+        List<Integer> fileRanges2 = Arrays.asList(0, 6);
+
+        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\test\\neg"), fileRanges1);
+        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\qqq"), fileRanges1);
+        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\test\\pos"), fileRanges1);
+        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
+        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
+        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\unsup"), fileRanges2);
+
+        return filesMap;
+    }
+
+    public static void writeResultInFile(ConcurrentHashMap<String, Set<String>> resultMap) {
+        /* Writes result indexes map in .json file */
         File file = new File(config.JSON_FILE_PATH);
         try {
             if (file.createNewFile()) {
                 System.out.println("New file created");
             }
-            // write hash map in .json file
             FileWriter writer = new FileWriter(config.JSON_FILE_PATH);
+            // serialize hashmap to json object
             JsonObject json = new Gson().toJsonTree(resultMap).getAsJsonObject();
 
             writer.write(String.valueOf(json));
