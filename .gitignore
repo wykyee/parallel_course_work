@@ -2,3 +2,5 @@
 *.iml
 *.xml
 out
+sample.json
+aclImdb

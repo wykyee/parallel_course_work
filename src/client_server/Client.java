@@ -1,17 +1,20 @@
 package client_server;
 
-import java.net.*;
-import java.io.*;
+import configs.Config;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.Scanner;
 
 class Client {
-    private static final String EXIT_WORD = "-quit";
-    public static final int PORT = 5001;
+    private static final Config config = new Config();
 
     public static void main(String[] args) throws IOException {
         try {
             Scanner inputScanner = new Scanner(System.in);
-            Socket socket = new Socket("localhost", PORT);
+            Socket socket = new Socket("localhost", config.PORT);
 
             DataInputStream in = new DataInputStream(socket.getInputStream());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
@@ -23,7 +26,7 @@ class Client {
                 userInput = inputScanner.nextLine();
                 out.writeUTF(userInput);
 
-                if (userInput.equals(EXIT_WORD)) {
+                if (userInput.equals(config.CLIENT_EXIT_WORD)) {
                     System.out.println("Bye bye");
                     killConnection(socket, in ,out);
                 }

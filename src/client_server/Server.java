@@ -1,6 +1,7 @@
 package client_server;
 
 import com.google.gson.Gson;
+import configs.Config;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -11,17 +12,18 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 public class Server {
-    public static final int PORT = 5001;
-    private static final String SAVE_FILE_PATH = "C:\\Users\\wykyee\\IdeaProjects\\course\\sample.json";
+    private static final Config config = new Config();
 
     public static void main(String[] args) throws IOException {
-        ServerSocket server = new ServerSocket(PORT);
+        ServerSocket server = new ServerSocket(config.PORT);
         System.out.println("Server Started");
 
         Gson gson = new Gson();
-        HashMap<String, ArrayList<String>> map = gson.fromJson(new FileReader(SAVE_FILE_PATH), HashMap.class);
+        HashMap<String, ArrayList<String>> map = gson.fromJson(
+            new FileReader(config.JSON_FILE_PATH),
+            HashMap.class
+        );
 
         while (true) {
             Socket socket = null;
@@ -33,6 +35,7 @@ public class Server {
 
                 in = new DataInputStream(socket.getInputStream());
                 out = new DataOutputStream(socket.getOutputStream());
+
                 Thread clientManager = new ClientManager(socket, in, out, map);
                 clientManager.start();
             } catch (IOException e) {
@@ -55,7 +58,7 @@ class ClientManager extends Thread {
     final DataInputStream in;
     final DataOutputStream out;
     final HashMap<String, ArrayList<String>> map;
-    private static final String EXIT_WORD = "-quit";
+    private final Config config = new Config();
 
     public ClientManager(Socket socket, DataInputStream in,
                          DataOutputStream out, HashMap<String, ArrayList<String>> map) {
@@ -73,7 +76,7 @@ class ClientManager extends Thread {
             try {
                 out.writeUTF("Enter word to find or '-quit' to exit");
                 userInput = in.readUTF();
-                if (userInput.equals(EXIT_WORD)) {
+                if (userInput.equals(config.CLIENT_EXIT_WORD)) {
                     killConnection();
                     out.writeUTF("Bye bye");
                     break;
