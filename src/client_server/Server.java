@@ -2,6 +2,7 @@ package client_server;
 
 import com.google.gson.Gson;
 import configs.Config;
+import inverted_index.InvertedIndexCreator;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -49,7 +50,7 @@ class ClientManager extends Thread {
     final Socket socket;
     final DataInputStream in;
     final DataOutputStream out;
-    final HashMap<String, ArrayList<String>> map;
+    private HashMap<String, ArrayList<String>> map;
     private final Config config = new Config();
 
     public ClientManager(Socket socket, DataInputStream in,
@@ -66,12 +67,27 @@ class ClientManager extends Thread {
         ArrayList<String> result;
         try {
             while (true) {
-                out.writeUTF("Enter word to find or '-quit' to exit");
+                out.writeUTF("Enter word to find, '-quit' to exit or '-update' to update index.");
                 userInput = in.readUTF();
                 if (userInput.equals(config.CLIENT_EXIT_WORD)) {
                     System.out.println("Client is disconnected");
                     killConnection();
                     break;
+                }
+                if (userInput.equals(config.INDEX_UPDATE_WORD)) {
+                    System.out.println("Updating file with index...");
+                    InvertedIndexCreator invertedIndexCreator = new InvertedIndexCreator(null);
+                    invertedIndexCreator.start();
+                    try {
+                        invertedIndexCreator.join();
+                    } catch (InterruptedException ignored) {}
+
+                    map = new Gson().fromJson(
+                        new FileReader(config.JSON_FILE_PATH),
+                        HashMap.class
+                    );
+                    out.writeUTF("File is updated");
+                    continue;
                 }
                 System.out.println("USER IS LOOKING FOR: " + userInput);
                 result = map.get(userInput);

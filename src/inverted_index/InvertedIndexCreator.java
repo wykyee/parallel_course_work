@@ -13,16 +13,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Main {
+public class InvertedIndexCreator extends Thread {
     private static final Config config = new Config();
+    private HashMap<File, List<Integer>> filesMap;
 
-    public static void main(String[] args) {
+    public InvertedIndexCreator(HashMap<File, List<Integer>> filesMap) {
+        this.filesMap = filesMap;
+    }
+
+    @Override
+    public void run() {
         IndexThread[] ThreadArray = new IndexThread[config.NUMBER_THREADS];
         ConcurrentHashMap<String, Set<String>> resultMap = new ConcurrentHashMap<>();
+        if (filesMap == null) {
+            filesMap = buildDefaultFilesMap();
+        }
 
-        HashMap<File, List<Integer>> filesMap = buildFilesMap();
-
-        long startTime = System.currentTimeMillis();;
+        long startTime = System.currentTimeMillis();
         // initializing and starting threads
         for (int i = 0; i < config.NUMBER_THREADS; i++) {
             ThreadArray[i] = new IndexThread(filesMap, resultMap, i, config.NUMBER_THREADS);
@@ -40,7 +47,7 @@ public class Main {
         writeResultInFile(resultMap);
     }
 
-    public static HashMap<File, List<Integer>> buildFilesMap() {
+    public static HashMap<File, List<Integer>> buildDefaultFilesMap() {
         /* filesMap structure: {
               file1: [start_index, end_index],
               file2: [start_index, end_index]
@@ -50,15 +57,15 @@ public class Main {
         // add ranges of files for each directory
 //        List<Integer> fileRanges1 = Arrays.asList(8250, 8500);
 //        List<Integer> fileRanges2 = Arrays.asList(33000, 34000);
-        List<Integer> fileRanges1 = Arrays.asList (0, 5);
+        List<Integer> fileRanges1 = Arrays.asList (0, 1);
         List<Integer> fileRanges2 = Arrays.asList(0, 6);
 
         filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\test\\neg"), fileRanges1);
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\qqq"), fileRanges1);
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\test\\pos"), fileRanges1);
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
-        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\unsup"), fileRanges2);
+//        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\qqq"), fileRanges1);
+//        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\test\\pos"), fileRanges1);
+//        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
+//        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
+//        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\unsup"), fileRanges2);
 
         return filesMap;
     }
@@ -76,6 +83,7 @@ public class Main {
 
             writer.write(String.valueOf(json));
             writer.close();
+            System.out.println("Json file is updated");
         } catch (IOException e) {
             e.printStackTrace();
         }

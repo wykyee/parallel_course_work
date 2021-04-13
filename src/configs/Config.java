@@ -5,5 +5,6 @@ public class Config {
     public final String FILES_DIRECTORY_PATH = "C:\\Users\\wykyee\\IdeaProjects\\course\\aclImdb";
     public final String JSON_FILE_PATH = "C:\\Users\\wykyee\\IdeaProjects\\course\\sample.json";
     public final String CLIENT_EXIT_WORD = "-quit";
+    public final String INDEX_UPDATE_WORD = "-update";
     public final int NUMBER_THREADS = 8;
 }
