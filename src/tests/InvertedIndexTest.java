@@ -49,7 +49,7 @@ public class InvertedIndexTest {
     void testInvertedIndex() {
         try {
             map = new Gson().fromJson(
-                new FileReader(config.JSON_FILE_PATH),
+                new FileReader(config.TEST_JSON_FILE_PATH),
                 HashMap.class
             );
         } catch (FileNotFoundException e) {
@@ -65,7 +65,7 @@ public class InvertedIndexTest {
             return;
         }
 
-        assertEquals(11, map.size());
+        assertEquals(10, map.size());
         List<String> actual = map.get("you");
         List<String> expected = Arrays.asList(
                 "tests/files/0_1.txt", "tests/files/1_1.txt",
