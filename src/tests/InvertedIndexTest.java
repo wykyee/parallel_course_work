@@ -31,7 +31,7 @@ public class InvertedIndexTest {
         List<Integer> testRanges = Arrays.asList(0, 5);
         testFilesMap.put(new File(config.TEST_FILES_DIRECTORY_PATH), testRanges);
 
-        invertedIndex = new InvertedIndexCreator(testFilesMap);
+        invertedIndex = new InvertedIndexCreator(testFilesMap, config.TEST_JSON_FILE_PATH);
     }
 
     @Test

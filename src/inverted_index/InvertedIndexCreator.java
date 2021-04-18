@@ -7,27 +7,23 @@ import configs.Config;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InvertedIndexCreator extends Thread {
     private static final Config config = new Config();
     private HashMap<File, List<Integer>> filesMap;
+    private String filename;
 
-    public InvertedIndexCreator(HashMap<File, List<Integer>> filesMap) {
-        this.filesMap = filesMap;
+    public InvertedIndexCreator(HashMap<File, List<Integer>> filesMap, String filename) {
+        this.filesMap = Objects.requireNonNullElseGet(filesMap, InvertedIndexCreator::buildDefaultFilesMap);
+        this.filename = filename;
     }
 
     @Override
     public void run() {
         IndexThread[] ThreadArray = new IndexThread[config.NUMBER_THREADS];
         ConcurrentHashMap<String, Set<String>> resultMap = new ConcurrentHashMap<>();
-        if (filesMap == null) {
-            filesMap = buildDefaultFilesMap();
-        }
 
         long startTime = System.currentTimeMillis();
         // initializing and starting threads
@@ -44,7 +40,7 @@ public class InvertedIndexCreator extends Thread {
             }
         }
         System.out.println("Ended in " + (System.currentTimeMillis() - startTime) / 1000 + " s");
-        writeResultInFile(resultMap);
+        writeResultInFile(resultMap, filename);
     }
 
     public static HashMap<File, List<Integer>> buildDefaultFilesMap() {
@@ -67,14 +63,14 @@ public class InvertedIndexCreator extends Thread {
         return filesMap;
     }
 
-    public static void writeResultInFile(ConcurrentHashMap<String, Set<String>> resultMap) {
+    public static void writeResultInFile(ConcurrentHashMap<String, Set<String>> resultMap, String filename) {
         /* Writes result indexes map in .json file */
-        File file = new File(config.JSON_FILE_PATH);
+        File file = new File(filename);
         try {
             if (file.createNewFile()) {
                 System.out.println("New file created");
             }
-            FileWriter writer = new FileWriter(config.JSON_FILE_PATH);
+            FileWriter writer = new FileWriter(filename);
             // serialize hashmap to json object
             JsonObject json = new Gson().toJsonTree(resultMap).getAsJsonObject();
 

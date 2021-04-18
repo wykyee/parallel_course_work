@@ -76,7 +76,7 @@ class ClientManager extends Thread {
                 }
                 if (userInput.equals(config.INDEX_UPDATE_WORD)) {
                     System.out.println("Updating file with index...");
-                    InvertedIndexCreator invertedIndexCreator = new InvertedIndexCreator(null);
+                    InvertedIndexCreator invertedIndexCreator = new InvertedIndexCreator(null, config.JSON_FILE_PATH);
                     invertedIndexCreator.start();
                     try {
                         invertedIndexCreator.join();
