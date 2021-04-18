@@ -12,8 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class InvertedIndexCreator extends Thread {
     private static final Config config = new Config();
-    private HashMap<File, List<Integer>> filesMap;
-    private String filename;
+    private final HashMap<File, List<Integer>> filesMap;
+    private final String filename;
 
     public InvertedIndexCreator(HashMap<File, List<Integer>> filesMap, String filename) {
         this.filesMap = Objects.requireNonNullElseGet(filesMap, InvertedIndexCreator::buildDefaultFilesMap);
@@ -39,6 +39,7 @@ public class InvertedIndexCreator extends Thread {
                 e.printStackTrace();
             }
         }
+        resultMap.remove("");
         System.out.println("Ended in " + (System.currentTimeMillis() - startTime) / 1000 + " s");
         writeResultInFile(resultMap, filename);
     }
