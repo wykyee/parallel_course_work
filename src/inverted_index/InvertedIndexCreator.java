@@ -49,23 +49,20 @@ public class InvertedIndexCreator extends Thread {
 
     public static HashMap<File, List<Integer>> buildDefaultFilesMap() {
         /* filesMap structure: {
-              file1: [start_index, end_index],
-              file2: [start_index, end_index]
+              file1: [start_index, end_index),
+              file2: [start_index, end_index)
         }  */
         HashMap<File, List<Integer>> filesMap = new HashMap<>();
 
         // add ranges of files for each directory
-//        List<Integer> fileRanges1 = Arrays.asList(8250, 8500);
-//        List<Integer> fileRanges2 = Arrays.asList(33000, 34000);
-        List<Integer> fileRanges1 = Arrays.asList (0, 1);
-        List<Integer> fileRanges2 = Arrays.asList(0, 6);
+        List<Integer> fileRanges1 = Arrays.asList(8250, 8500);
+        List<Integer> fileRanges2 = Arrays.asList(33000, 34000);
 
         filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\test\\neg"), fileRanges1);
-//        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\qqq"), fileRanges1);
-//        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\test\\pos"), fileRanges1);
-//        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
-//        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
-//        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\unsup"), fileRanges2);
+        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\test\\pos"), fileRanges1);
+        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
+        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\neg"), fileRanges1);
+        filesMap.put(new File(config.FILES_DIRECTORY_PATH + "\\train\\unsup"), fileRanges2);
 
         return filesMap;
     }

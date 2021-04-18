@@ -6,7 +6,7 @@ import java.io.FilenameFilter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-class IndexThread extends Thread {
+public class IndexThread extends Thread {
     ConcurrentHashMap<String, Set<String>> indexMap;
     HashMap<File, List<Integer>> filesMap;
     Integer maxThreads, threadIndex;
@@ -65,7 +65,7 @@ class IndexThread extends Thread {
         return filesList;
     }
 
-    private String getFileDirectory(File file) {
+    public String getFileDirectory(File file) {
         /* Return file path as dir/dir/file. It will be saved in indexMap
            and needs less place to store than File object */
         return file.getParentFile().getParentFile()
@@ -73,7 +73,7 @@ class IndexThread extends Thread {
                 .getName() + "/" + file.getName();
     }
 
-    private String prepareWord(String word) {
+    public String prepareWord(String word) {
         /* Normalizes word to add it in index map.
            All words will be lowercase, without non letters symbols */
         return word.toLowerCase().replaceAll("[^a-zA-Z]", "");
