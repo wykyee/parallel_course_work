@@ -4,3 +4,4 @@ out
 sample.json
 aclImdb
 test.json
+*.iml

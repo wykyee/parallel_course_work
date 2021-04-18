@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import configs.Config;
 import inverted_index.InvertedIndexCreator;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -21,6 +18,14 @@ public class Server {
         System.out.println("Server Started");
 
         Gson gson = new Gson();
+        File jsonFile = new File(config.JSON_FILE_PATH);
+        if (!jsonFile.exists()) {
+            jsonFile.createNewFile();
+            FileWriter fileWriter = new FileWriter(config.JSON_FILE_PATH);
+            fileWriter.write("{}");
+            fileWriter.close();
+        }
+
         HashMap<String, ArrayList<String>> map = gson.fromJson(
             new FileReader(config.JSON_FILE_PATH),
             HashMap.class
