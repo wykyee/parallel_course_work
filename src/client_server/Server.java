@@ -95,6 +95,7 @@ class ClientManager extends Thread {
                     continue;
                 }
                 System.out.println("USER IS LOOKING FOR: " + userInput);
+                userInput = prepareWord(userInput);
                 result = map.get(userInput);
                 if (result != null) {
                     out.writeUTF(result.toString());
@@ -105,6 +106,12 @@ class ClientManager extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String prepareWord(String word) {
+        /* Normalizes word to add it in index map.
+           All words will be lowercase, without non letters symbols */
+        return word.toLowerCase().replaceAll("[^a-zA-Z]", "");
     }
 
     private void killConnection() {
