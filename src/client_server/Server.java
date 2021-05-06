@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Server {
@@ -69,7 +70,7 @@ class ClientManager extends Thread {
     @Override
     public void run() {
         String userInput;
-        ArrayList<String> result;
+        ArrayList<String> result, finalResult;
         try {
             while (true) {
                 out.writeUTF("Enter word to find, '-quit' to exit or '-update' to update index.");
@@ -95,13 +96,31 @@ class ClientManager extends Thread {
                     continue;
                 }
                 System.out.println("USER IS LOOKING FOR: " + userInput);
-                userInput = prepareWord(userInput);
-                result = map.get(userInput);
-                if (result != null) {
-                    out.writeUTF(result.toString());
-                } else {
-                    out.writeUTF("Files don't contain word '" + userInput + "'");
+                String[] splitedUserInput = userInput.split("\\s+");
+                finalResult = null;
+
+                for (String word : splitedUserInput) {
+                    word = prepareWord(word);
+                    result = map.get(word);
+
+                    if (result == null) {
+                        out.writeUTF("Files don't contain word '" + word + "'");
+                        break;
+                    }
+
+                    if (finalResult == null) {
+                        finalResult = new ArrayList<>(result);
+                    } else {
+                        finalResult.retainAll(result);
+                    }
                 }
+
+                if (finalResult == null) {
+                    out.writeUTF("Enter another sequence");
+                } else {
+                    out.writeUTF(finalResult.toString());
+                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
